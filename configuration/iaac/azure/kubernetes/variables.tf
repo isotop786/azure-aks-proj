@@ -11,7 +11,7 @@ variable "location" {
 }
 
 variable "node_count" {
-  default = 1
+  default = 4
 }
 
 variable "dns_prefix" {
