@@ -1,13 +1,12 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
     }
   }
 
-  backend "azurerm" {
-    # values are supplied by -backend-config in terraform init
-  }
+  backend "azurerm" {}
 }
 
 provider "azurerm" {
