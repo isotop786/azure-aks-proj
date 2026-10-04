@@ -26,10 +26,9 @@ steps:
     provider: 'azurerm'
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+    backendAzureRmUseEntraIdForAuthentication: false
     backendServiceArm: 'azure-resource-manager-service-connection'
-    backendAzureRmResourceGroupName: 'terraform-backend-rg'
+    backendAzureRmResourceGroupName: 'kubernetes-terraform-rg'
     backendAzureRmStorageAccountName: 'storageaccountmaruf'
     backendAzureRmContainerName: 'storageaccountmarufcontainer'
-    backendAzureRmKey: 'k8s-dev.tfstate'
-    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
-    
+    backendAzureRmKey: 'terraform_dev.tfstate'
