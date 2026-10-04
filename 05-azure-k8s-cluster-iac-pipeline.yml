@@ -28,7 +28,7 @@ steps:
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
     backendAzureRmUseEntraIdForAuthentication: false
-    backendServiceArm: 'azure-resource-manager-service-connection'
+    backendServiceArm: 'Azure subscription 1(447da39a-bfeb-477a-8d7c-12d20b1404bc)'
     backendAzureRmResourceGroupName: 'kubernetes-terraform-rg'
     backendAzureRmStorageAccountName: 'storageaccountmaruf'
     backendAzureRmContainerName: 'storageaccountmarufcontainer'
