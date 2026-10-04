@@ -33,3 +33,12 @@ steps:
     backendAzureRmStorageAccountName: 'storageaccountmaruf'
     backendAzureRmContainerName: 'storageaccountmarufcontainer'
     backendAzureRmKey: 'terraform_dev.tfstate'
+
+
+- task: TerraformTask@5
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+    commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key=$(publickey.secureFilePath)'
+    environmentServiceNameAzureRM: 'azure-resource-manager-service-connection'
