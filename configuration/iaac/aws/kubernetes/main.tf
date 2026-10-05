@@ -1,81 +1,59 @@
-# aws --version
-# aws eks --region us-east-1 update-kubeconfig --name in28minutes-cluster
-# Uses default VPC and Subnet. Create Your Own VPC and Private Subnets for Prod Usage.
-# terraform-backend-state-in28minutes-123
-
-# Access key = AKIAT56RLCKHF2KBEYQL
-# 
-
-terraform{
-  backend "s3"{
-    bucket = "terraform-backend-state-270485099150"
-    key = "path/to/my/key"
-    region = "us-east-1"
+terraform {
+  required_version = ">= 1.5"
+  required_providers {
+    aws        = { source = "hashicorp/aws", version = "~> 5.0" }
+    kubernetes = { source = "hashicorp/kubernetes", version = "~> 2.30" }
+  }
+  backend "s3" {
+    bucket       = "terraform-backend-state-270485099150"
+    key          = "eks/in28minutes/terraform.tfstate"
+    region       = "us-east-1"
+    encrypt      = true
+    use_lockfile = true
   }
 }
 
-resource "aws_default_vpc" "default" {
-
+provider "aws" {
+  region = "us-east-1"
 }
 
-data "aws_subnet_ids" "subnets" {
-  vpc_id = aws_default_vpc.default.id
-}
+resource "aws_default_vpc" "default" {}
 
-module "in28minutes-cluster" {
- source = "terraform-aws-modules/eks/aws"
- cluster_name = "in28minutes-cluster"
- cluster_version = "1.14"
- subnets = ["subnet-016b12f4d96529e69", "subnet-0affcb6c80068fb00"] # Need to change  
- vpc_id = aws_default_vpc.default.id 
-
- node_groups = [
-  {
-    instance_type = "t3.micro"
-    max_capacity = 5 
-    desired_capacity = 3
-    min_capacity = 3
+data "aws_subnets" "subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [aws_default_vpc.default.id]
   }
- ]
 }
 
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
 
-data "aws_eks_cluster" "cluster" {
-  name = module.in28minutes-cluster.cluster_id
+  cluster_name    = "in28minutes-cluster"
+  cluster_version = "1.31" # use a currently supported version
+  vpc_id          = aws_default_vpc.default.id
+  subnet_ids      = data.aws_subnets.subnets.ids
+
+  cluster_endpoint_public_access           = true
+  enable_cluster_creator_admin_permissions = true
+
+  eks_managed_node_groups = {
+    default = {
+      instance_types = ["t3.medium"]
+      min_size       = 3
+      desired_size   = 3
+      max_size       = 5
+    }
+  }
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.in28minutes-cluster.cluster_id
+  name = module.eks.cluster_name
 }
-
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
   token                  = data.aws_eks_cluster_auth.cluster.token
-  version                = "~> 2.12"
-}
-
-# We will use ServiceAccount to connect to K8S Cluster in CI/CD mode
-# ServiceAccount needs permissions to create deployments 
-# and services in default namespace
-resource "kubernetes_cluster_role_binding" "example" {
-  metadata {
-    name = "fabric8-rbac"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "default"
-    namespace = "default"
-  }
-}
-
-# Needed to set the default region
-provider "aws" {
-  region  = "us-east-1"
 }
