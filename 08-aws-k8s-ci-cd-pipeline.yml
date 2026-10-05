@@ -17,6 +17,10 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: 'latest'   # or pin, e.g. '1.9.5'
     - task: TerraformTask@5
       inputs:
         provider: 'aws'
