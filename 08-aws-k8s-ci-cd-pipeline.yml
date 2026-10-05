@@ -1,0 +1,49 @@
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: TerraformTask@5
+      inputs:
+        provider: 'aws'
+        command: 'destroy'
+        environmentServiceNameAWS: 'aws-for-terraform'
+    # - task: Docker@2
+    #   displayName: Build an image
+    #   inputs:
+    #     command: build
+    #     dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+    #     tags: |
+    #       $(tag)
+
+    # - task: CopyFiles@2
+    #   inputs:
+    #     SourceFolder: '$(System.DefaultWorkingDirectory)'
+    #     Contents: '**'
+    #     TargetFolder: '$(Build.ArtifactsStagingDirectory)'
+
+# Build stage
+# Build docker 
+# Push docker => 100
+# Copy Files to stageing Dir
+# Publish
+
+# Deploy stage
+# image:100 => Deploy to k8s 
+# apply - kubectl -f deployment.yaml
+# apply - kubectl apply -f deployment.yaml
+
