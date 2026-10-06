@@ -20,7 +20,7 @@ stages:
     - task: Docker@2
       displayName: Build and Push an image
       inputs:
-        containerRegistray: 'Docker-conn-registry'
+        containerRegistray: 'docker-conn'
         repository: 'marufuli707/currency-exchange-devops'
         command: buildAndPush
         dockerfile: '**/Dockerfile'
