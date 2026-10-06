@@ -53,7 +53,8 @@ spec:
       terminationGracePeriodSeconds: 30
 ---
 apiVersion: v1
-kind: Service
+# kind: Service
+kind: LoadBalancer
 metadata:
   labels: #PODS
     app: currency-exchange
