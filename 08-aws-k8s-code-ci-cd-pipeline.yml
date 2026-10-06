@@ -6,7 +6,7 @@ resources:
 - repo: self
 
 variables:
-  tag: 35
+  tag: $(Build.BuildId)
 
 stages:
 - stage: Build
@@ -21,7 +21,7 @@ stages:
       displayName: Build and Push an image
       inputs:
         containerRegistray: 'in28min-docker-hub'
-        repository: 'in28min/currency-exchange-devops'
+        repository: '110053917/currency-exchange-devops'
         command: buildAndPush
         dockerfile: '**/Dockerfile'
         tags: |
