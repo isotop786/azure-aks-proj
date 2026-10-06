@@ -54,7 +54,7 @@ spec:
 ---
 apiVersion: v1
 # kind: Service
-kind: LoadBalancer
+kind: Service
 metadata:
   labels: #PODS
     app: currency-exchange
@@ -69,4 +69,5 @@ spec:
   selector:
     app: currency-exchange
   sessionAffinity: None #CHANGE
-  type: NodePort
+  # type: NodePort
+  type: LoadBalancer
